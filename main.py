@@ -67,12 +67,11 @@ def generatePuzzle(pcs):
     pcs is a tuple (y, x)
     """
 
-    pL = np.full(shape=pcs, fill_value=1111, dtype=int)
+    pL = np.full(shape=(pcs[0],pcs[1],4), fill_value=1, dtype=int)
 
     for y, row in enumerate(pL):
         for x, pc in enumerate(row):
             # print("Piece ({},{})".format(x,y))
-            pcList = ["1","1","1","1"]
 
             for i in range(4):
                 oS = oppSide(i)
@@ -81,16 +80,16 @@ def generatePuzzle(pcs):
 
                 # # edge check
                 if nPC[0] == -1 or nPC[1] == -1 or nPC[0] == pcs[1] or nPC[1] == pcs[0]:
-                    pcList[i] = 2
+                    pc[i] = 2
                 else:
-                    if str(pL[nPC[1]][nPC[0]])[oS] == "1":
-                        pcList[i] = random.randint(3,4)
-                    elif str(pL[nPC[1]][nPC[0]])[oS] == "2":
-                        pcList[i] = 2
-                    elif str(pL[nPC[1]][nPC[0]])[oS] == "3":
-                        pcList[i] = 4
-                    elif str(pL[nPC[1]][nPC[0]])[oS] == "4":
-                        pcList[i] = 3
+                    if pL[nPC[1]][nPC[0]][oS] == 1:
+                        pc[i] = random.randint(3,4)
+                    elif pL[nPC[1]][nPC[0]][oS] == 2:
+                        pc[i] = 2
+                    elif pL[nPC[1]][nPC[0]][oS] == 3:
+                        pc[i] = 4
+                    elif pL[nPC[1]][nPC[0]][oS] == 4:
+                        pc[i] = 3
 
                 # print(oS, nPC, pcList)
 
@@ -124,9 +123,8 @@ def generatePuzzle(pcs):
                 #     # print("Left pc")       
                 #     pcList[3] = 2
 
-            foo = int(''.join(str(n) for n in pcList))
             # print(foo)
-            pL[y][x] = foo
+            pL[y][x] = pc
 
     print(pL)
 
@@ -191,10 +189,10 @@ def createPiece(
 
     # the circles:
     for i in range(4):
-        side = str(pcCode)[i]
-        if side == "3":
+        side = pcCode[i]
+        if side == 3:
             draw.ellipse(crCoords[i], fill=emptyColor)
-        elif side == "4":
+        elif side == 4:
             draw.ellipse(crCoords[i], fill=fillColor)
 
     # overlaying base image
@@ -202,7 +200,8 @@ def createPiece(
     finalPiece.putalpha(im.convert(mode="L"))
 
     fName = "Piece ({},{}).png".format(pcCoord[0], pcCoord[1])
-    os.mkdir("Export Pieces")
+    if not os.path.exists("Export Pieces"):
+        os.mkdir("Export Pieces")
     finalPiece.save(os.path.join("Export Pieces", fName))
 
 def main():
